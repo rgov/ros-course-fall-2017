@@ -8,8 +8,8 @@ project(beginner_tutorials)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  message_generation
   roscpp
-  rospy
   std_msgs
 )
 
@@ -54,11 +54,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  AddTwoInts.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -68,10 +67,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -133,13 +132,18 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
+add_executable(${PROJECT_NAME}_add_two_ints_client_node src/add_two_ints_client.cpp)
+add_executable(${PROJECT_NAME}_add_two_ints_server_node src/add_two_ints_server.cpp)
 add_executable(${PROJECT_NAME}_listener_node src/listener.cpp)
 add_executable(${PROJECT_NAME}_talker_node src/talker.cpp)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
+set_target_properties(${PROJECT_NAME}_add_two_ints_client_node PROPERTIES OUTPUT_NAME add_two_ints_client_node PREFIX "")
+set_target_properties(${PROJECT_NAME}_add_two_ints_server_node PROPERTIES OUTPUT_NAME add_two_ints_server_node PREFIX "")
 set_target_properties(${PROJECT_NAME}_listener_node PROPERTIES OUTPUT_NAME listener_node PREFIX "")
 set_target_properties(${PROJECT_NAME}_talker_node PROPERTIES OUTPUT_NAME talker_node PREFIX "")
 
@@ -147,7 +151,16 @@ set_target_properties(${PROJECT_NAME}_talker_node PROPERTIES OUTPUT_NAME talker_
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+add_dependencies(${PROJECT_NAME}_add_two_ints_client_node beginner_tutorials_gencpp)
+add_dependencies(${PROJECT_NAME}_add_two_ints_server_node beginner_tutorials_gencpp)
+
 ## Specify libraries to link a library or executable target against
+target_link_libraries(${PROJECT_NAME}_add_two_ints_client_node
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(${PROJECT_NAME}_add_two_ints_server_node
+  ${catkin_LIBRARIES}
+)
 target_link_libraries(${PROJECT_NAME}_listener_node
   ${catkin_LIBRARIES}
 )
